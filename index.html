@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Se respira bien en el aula? Simulador de CO₂ con EDO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<header class="hx">
+<div>
+<div class="top"><span class="dot"></span>Desafío de Métodos Numéricos · 2026</div>
+<h1>Cada clase merece aire limpio.<em>Modelemos el aire del salón.</em></h1>
+<p>¿En cuántos minutos se llena de CO₂ un aula? Una ecuación diferencial responde esa pregunta, y comparamos la precisión de Heun y Runge-Kutta de cuarto orden. Los parámetros son hipotéticos, no mediciones reales.</p>
+<a class="cta" href="#sim">Probar el simulador</a>
+</div>
+<div class="arch"><svg viewBox="0 0 260 300" width="100%" height="100%" aria-hidden="true"><rect x="70" y="62" width="120" height="110" rx="10" fill="none" stroke="#a7f3c8" stroke-opacity=".65" stroke-width="3"/><path d="M130 62v110M70 117h120" stroke="#a7f3c8" stroke-opacity=".65" stroke-width="3"/><path d="M10 215c30-22 55 20 85 0s55-22 85 0 45 12 70-4" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="3"/><path d="M10 240c30-22 55 20 85 0s55-22 85 0 45 12 70-4" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="3"/></svg><div class="chip"><b>Límite recomendado: 1000 ppm</b>Heun y RK4 frente a la solución exacta</div></div>
+</header>
+
+<section>
+<h2>El problema</h2>
+<p>En un aula cerrada, el CO₂ que exhalamos se acumula. Por encima de 1000 ppm aparecen cansancio y falta de concentración. <b>Pregunta del desafío:</b> ¿en cuántos minutos se supera ese límite y cuánta ventilación hace falta para no pasarlo?</p>
+<p>Modelo (tiempo t en minutos, C en ppm):</p>
+<div class="eq"><span class="fr"><i>dC</i><i>dt</i></span><span>= a − λ</span><span class="pa">(</span><span>C − C<sub>ext</sub></span><span class="pa">)</span><span style="margin-left:auto;font-size:.55em;font-weight:500;opacity:.85">con C(0) = C₀</span></div>
+<div class="eqn"><span>a = <span class="fr"><i>1000·N·g</i><i>V</i></span> (ppm/min): CO₂ que generan las personas</span><span>λ = <span class="fr"><i>Q</i><i>V</i></span> (1/min): qué tan rápido se renueva el aire</span></div>
+</section>
+
+<section>
+<h2>Supuestos y parámetros</h2>
+<p>Supuestos del modelo: el aire del aula se mezcla bien; el número de estudiantes y la ventilación se mantienen constantes; el CO₂ exterior es constante; la única fuente de CO₂ son las personas. Los valores base son <b>hipotéticos</b> y se pueden cambiar abajo.</p>
+<div class="wrap"><table>
+<tr><th>Parámetro</th><th>Unidad</th><th>Valor base</th><th style="text-align:left">Por qué ese valor</th></tr>
+<tr><td>N, estudiantes</td><td>personas</td><td>30</td><td style="text-align:left">Curso típico</td></tr>
+<tr><td>g, CO₂ por persona</td><td>L/min</td><td>0,3</td><td style="text-align:left">Orden de magnitud de una persona sentada</td></tr>
+<tr><td>V, volumen</td><td>m³</td><td>144</td><td style="text-align:left">Aula de 6 × 8 × 3 m</td></tr>
+<tr><td>Q, ventilación</td><td>m³/min</td><td>6</td><td style="text-align:left">Ventanas entreabiertas (unas 2,5 renovaciones/h)</td></tr>
+<tr><td>C_ext, CO₂ exterior</td><td>ppm</td><td>420</td><td style="text-align:left">Aire libre típico</td></tr>
+<tr><td>C₀, CO₂ inicial</td><td>ppm</td><td>420</td><td style="text-align:left">Aula ventilada antes de empezar</td></tr>
+<tr><td>T y h</td><td>min</td><td>60 y 5</td><td style="text-align:left">Una hora de clase y un paso de 5 min</td></tr>
+</table></div>
+</section>
+
+<div class="panel" id="sim">
+<h2>Parámetros</h2>
+<div class="grid" id="inputs"></div>
+<p id="err" role="alert"></p>
+</div>
+
+<div class="hero">
+<div class="big"><div class="u">Tiempo hasta superar 1000 ppm</div><div class="n" id="tstar">–</div><div class="u" id="tnote"></div></div>
+<div class="stats">
+<div class="stat"><span>CO₂ al final (analítico)</span><strong id="cend">–</strong></div>
+<div class="stat"><span>Ventilación mínima para no pasar 1000 ppm</span><strong id="qreq">–</strong></div>
+<div class="stat"><span>Error máximo (Heun / RK4)</span><strong id="emax">–</strong></div>
+</div>
+</div>
+
+<section>
+<h2>Solución analítica, Heun y RK4</h2>
+<div class="leg"><span><i style="background:var(--ex)"></i>Analítica</span><span><i style="background:var(--he)"></i>Heun</span><span><i style="background:var(--rk)"></i>RK4</span><span><i style="background:var(--bad)"></i>Límite 1000 ppm</span></div>
+<div id="ch1" class="sv"></div>
+</section>
+
+<section>
+<h2>Error absoluto frente a la analítica</h2>
+<div class="leg"><span><i style="background:var(--he)"></i>Heun</span><span><i style="background:var(--rk)"></i>RK4</span></div>
+<div id="ch2" class="sv"></div>
+</section>
+
+<section>
+<h2>Comparación de tamaños de paso</h2>
+<p class="sub">Error absoluto máximo en todo el intervalo, con los mismos parámetros.</p>
+<div class="wrap"><table id="steps"></table></div>
+</section>
+
+<section>
+<h2>Tabla por pasos</h2>
+<div class="wrap"><table id="tbl"></table></div>
+</section>
+
+<section>
+<h2>Escenarios de ventilación</h2>
+<p class="sub">Mismo aula y mismas personas, tres formas de ventilar (renovaciones por hora hipotéticas).</p>
+<div class="leg"><span><i style="background:var(--rk)"></i>Ventanas cerradas</span><span><i style="background:var(--he)"></i>Entreabiertas</span><span><i style="background:var(--ex)"></i>Ventanas y puerta abiertas</span><span><i style="background:var(--bad)"></i>Límite 1000 ppm</span></div>
+<div id="ch3" class="sv"></div>
+<div class="wrap" style="margin-top:10px"><table id="scen"></table></div>
+</section>
+
+<section>
+<h2>Interpretación para la comunidad</h2>
+<div id="interp"></div>
+</section>
+
+<section>
+<h2>Conclusiones</h2>
+<div id="concl"></div>
+</section>
+
+<section>
+<h2>Mi historial de simulaciones</h2>
+<p class="sub">Guarda cada simulación en este navegador (localStorage), sin registro. Cada registro incluye los parámetros y los resultados. Puedes cargarlo de nuevo, borrarlo o exportar todo a CSV.</p>
+<div class="hb">
+<label for="sname" style="flex:1;min-width:200px"><b>Nombre del escenario</b><input id="sname" type="text" maxlength="60" placeholder="Ej.: Salón con ventanas cerradas"></label>
+<button type="button" id="bsave">Guardar simulación</button>
+<button type="button" id="bcsv">Exportar CSV</button>
+<button type="button" id="bclr">Borrar todo</button>
+</div>
+<p id="hmsg" class="sub" role="status"></p>
+<div class="wrap"><table id="hist"></table></div>
+</section>
+
+<section>
+<h2>Solución analítica y verificación</h2>
+<p>La EDO es lineal. Con</p>
+<div class="ec"><span>C<sub>∞</sub> = C<sub>ext</sub> +</span><span class="fr"><i>a</i><i>λ</i></span></div>
+<p>la solución es:</p>
+<div class="ec">C(t) = C<sub>∞</sub> + (C<sub>0</sub> − C<sub>∞</sub>)·e<sup>−λt</sup></div>
+<p>Verificación. Al derivar:</p>
+<div class="ec">C′(t) = −λ(C<sub>0</sub> − C<sub>∞</sub>)e<sup>−λt</sup> = −λ(C − C<sub>∞</sub>) = a − λ(C − C<sub>ext</sub>)</div>
+<p>porque λ·C<sub>∞</sub> = λ·C<sub>ext</sub> + a. Además, C(0) = C<sub>∞</sub> + C<sub>0</sub> − C<sub>∞</sub> = C<sub>0</sub>. Si Q = 0 (λ = 0), la solución es C(t) = C<sub>0</sub> + a·t.</p>
+<p>El tiempo en que C llega a 1000 ppm es:</p>
+<div class="ec"><span>t* =</span><span class="fr"><i>1</i><i>λ</i></span><span>· ln</span><span class="pa">(</span><span class="fr"><i>C<sub>∞</sub> − C<sub>0</sub></i><i>C<sub>∞</sub> − 1000</i></span><span class="pa">)</span></div>
+<p>siempre que C<sub>∞</sub> &gt; 1000 y C<sub>0</sub> &lt; 1000.</p>
+</section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
