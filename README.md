@@ -1,14 +1,13 @@
 # ¿Se respira bien en nuestro salón? Modelo del CO₂ en el aula con EDO
 
 **Desafío individual de Métodos Numéricos · 2026**
-**Estudiante:** [Tu nombre completo]
+**Estudiante:** Jhonatan Pongo Gavincha
 **Materia:** Métodos Numéricos
 
-- **Aplicación web:** [pega aquí el enlace público]
-- **Video (1 min):** [pega aquí el enlace del video]
-- **Repositorio:** [pega aquí el enlace de este repositorio]
+- **Aplicación web:** https://jhonatan-gavincha.github.io/DESAFIO-ECUACIONES-DIFERENCIALES/
+- **Video (1 min):** https://youtu.be/kX86wcQ_CeQ
+- **Repositorio:** https://github.com/Jhonatan-Gavincha/DESAFIO-ECUACIONES-DIFERENCIALES
 
-> Todos los parámetros son **hipotéticos**. La simulación ilustra el fenómeno, no es una predicción comprobada con mediciones.
 
 ---
 
